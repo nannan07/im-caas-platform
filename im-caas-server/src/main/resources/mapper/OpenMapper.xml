@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.plugin.open.dao.OpenMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.plugin.open.model.OpenPo">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="TOKEN" property="token" jdbcType="VARCHAR" />
+		<result column="CODE" property="code" jdbcType="VARCHAR" />
+		<result column="OBJECTID" property="objectid" jdbcType="VARCHAR" />
+		<result column="RECEIVEID" property="receiveid" jdbcType="VARCHAR" />
+		<result column="CUSER" property="cuser" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="TCOUNT" property="tcount" jdbcType="INTEGER" />
+		<result column="CCOUNT" property="ccount" jdbcType="INTEGER" />
+		<result column="CTIME" property="ctime" jdbcType="TIMESTAMP" />
+		<result column="UTIME" property="utime" jdbcType="TIMESTAMP" />
+		<result column="DEL" property="del" jdbcType="INTEGER" />
+		
+		<result column="FAILURETIME" property="failUretime" jdbcType="TIMESTAMP" />
+		<result column="STATUS" property="status" jdbcType="INTEGER" />
+		<result column="PjName" property="objectName" jdbcType="VARCHAR" />
+		<result column="RECEIVEERNAME" property="receiverName" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, TOKEN, CODE, OBJECTID, RECEIVEID, CUSER, TYPE,TCOUNT,CCOUNT,CTIME,UTIME
+	</sql>
+	<select id="selectByTokenCode" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select ID, TOKEN, CODE, OBJECTID, RECEIVEID, CUSER, TYPE,TCOUNT,CCOUNT,CTIME,UTIME,
+		IF(DEL = 1,1,IF(CTIME + INTERVAL #{expiry_date,jdbcType=INTEGER} DAY &lt; NOW(),1,0)) AS STATUS
+		from open
+		where TOKEN = #{token,jdbcType=VARCHAR} 
+		<if test="code != null and  code !='' ">
+			and CODE = #{code,jdbcType=VARCHAR}
+		</if>
+	</select>
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into open (ID, TOKEN, CODE, OBJECTID, RECEIVEID, CUSER, TYPE, CTIME,
+		TCOUNT,CCOUNT,DEL)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id}, #{item.token}, #{item.code},
+			#{item.objectid},#{item.receiveid},#{item.cuser},#{item.type},now(),#{item.tcount},0,0)
+		</foreach>
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="java.lang.String">
+		update open
+		set
+		CCOUNT = CCOUNT+1,UTIME = now(),DEL = IF(CCOUNT=7,1,0)
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<select id="openSelect" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select o.ID, o.TOKEN, o.CODE, o.OBJECTID, o.RECEIVEID, p.PjName,
+		o.TYPE,o.TCOUNT,o.CCOUNT,o.CTIME,o.CTIME + INTERVAL #{expiry_date,jdbcType=INTEGER} DAY AS FAILURETIME,
+		IF(o.DEL = 1,1,IF(o.CTIME + INTERVAL #{expiry_date,jdbcType=INTEGER} DAY &lt; NOW(),1,0)) AS STATUS,
+		IF (U1.USERNAME IS NULL,d1.DEPTNAME,U1.USERNAME) AS RECEIVEERNAME
+		from open o
+		left join pj_info p ON o.OBJECTID = p.id
+		LEFT JOIN msi_user U1 ON o.RECEIVEID = U1.ID
+		LEFT JOIN msi_dept d1 ON o.RECEIVEID = d1.ID
+		where 1=1
+		<if test="objectId != null and  objectId !='' ">
+			and o.OBJECTID = #{objectId,jdbcType=VARCHAR}
+		</if>
+		<if test="receiverId != null and receiverId !='' ">
+			and o.RECEIVEID = #{receiverId,jdbcType=VARCHAR} 
+		</if>
+		<if test="id != null and  id !='' ">
+			and o.ID = #{id,jdbcType=VARCHAR}
+		</if>
+		order by o.CTIME desc
+		<if test="page != null and pageSize != null">
+			LIMIT #{page},#{pageSize}
+		</if>
+	</select>
+	<select id="openCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+		select count(ID) from open
+		where 1=1
+		<if test="objectId != null and  objectId !='' ">
+			and OBJECTID = #{objectId,jdbcType=VARCHAR}
+		</if>
+		<if test="receiverId != null and receiverId !='' ">
+			and RECEIVEID = #{receiverId,jdbcType=VARCHAR} 
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.caas.dao.PjThemeMapper" >
+  <resultMap id="BaseResultMap" type="com.allmsi.caas.model.PjTheme" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="pjId" property="pjId" jdbcType="VARCHAR" />
+    <result column="dictId" property="dictId" jdbcType="VARCHAR" />
+    <result column="cTime" property="cTime" jdbcType="TIMESTAMP" />
+    <result column="uTime" property="uTime" jdbcType="TIMESTAMP" />
+    <result column="del" property="del" jdbcType="BIT" />
+    
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, pjId, dictId, cTime, uTime, del
+  </sql>
+  <select id="selectByPjId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+ 	select d.name,pt.dictId,d.sort from im_tc_pj_theme pt 
+ 	LEFT JOIN pj_info i on pt.pjId = i.ID and i.DeleFlag = 0
+	LEFT JOIN im_ta_dict d on  pt.dictId = d.id
+	where pjId = #{pjId,jdbcType=VARCHAR} and del = 0
+	order by d.sort
+  </select>
+  <insert id="insertBatch" parameterType="java.util.List">
+		insert into im_tc_pj_theme (id, pjId, dictId,  cTime,del)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id}, #{item.pjId}, #{item.dictId},	now(), 0)
+		</foreach>
+	</insert>
+	<update id="deleteByPjid" parameterType="java.lang.String">
+		update im_tc_pj_theme
+		set del = 1,uTime = now()
+		where pjId = #{pjId,jdbcType=VARCHAR} and DEL = 0
+	</update>
+</mapper>

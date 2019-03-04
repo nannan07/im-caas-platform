@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.caas.dao.OpinionNewsMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.caas.model.OpinionNews">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="PJID" property="pjid" jdbcType="VARCHAR" />
+		<result column="SENDER" property="sender" jdbcType="VARCHAR" />
+		<result column="RECEIVER" property="receiver" jdbcType="VARCHAR" />
+		<result column="TITLE" property="title" jdbcType="VARCHAR" />
+		<result column="CONTENT" property="content" jdbcType="VARCHAR" />
+		<result column="CREATETIME" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="UPDATETIME" property="updatetime" jdbcType="TIMESTAMP" />
+		<result column="MARK" property="mark" jdbcType="INTEGER" />
+		<result column="SENDERFLAG" property="senderflag" jdbcType="INTEGER" />
+		<result column="RECEIVERFLAG" property="receiverflag" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PJID, SENDER, RECEIVER, TITLE, CONTENT, CREATETIME,
+		UPDATETIME, MARK,
+		SENDERFLAG,
+		RECEIVERFLAG
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from OPINION_NEWS
+		where ID = #{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		OPINION_NEWS
+		where ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.allmsi.caas.model.OpinionNews">
+		insert into OPINION_NEWS (ID,
+		PJID, SENDER,
+		RECEIVER, TITLE, CONTENT,
+		CREATETIME, UPDATETIME, MARK,
+		SENDERFLAG, RECEIVERFLAG)
+		values (#{id,jdbcType=VARCHAR},
+		#{pjid,jdbcType=VARCHAR},
+		#{sender,jdbcType=VARCHAR},
+		#{receiver,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR},
+		#{content,jdbcType=VARCHAR},
+		now(), #{updatetime,jdbcType=TIMESTAMP},
+		#{mark,jdbcType=INTEGER},
+		#{senderflag,jdbcType=INTEGER},
+		#{receiverflag,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.allmsi.caas.model.OpinionNews">
+		insert into OPINION_NEWS
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="pjid != null">
+				PJID,
+			</if>
+			<if test="sender != null">
+				SENDER,
+			</if>
+			<if test="receiver != null">
+				RECEIVER,
+			</if>
+			<if test="title != null">
+				TITLE,
+			</if>
+			<if test="content != null">
+				CONTENT,
+			</if>
+			<if test="createtime != null">
+				CREATETIME,
+			</if>
+			<if test="updatetime != null">
+				UPDATETIME,
+			</if>
+			<if test="mark != null">
+				MARK,
+			</if>
+			<if test="senderflag != null">
+				SENDERFLAG,
+			</if>
+			<if test="receiverflag != null">
+				RECEIVERFLAG,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="pjid != null">
+				#{pjid,jdbcType=VARCHAR},
+			</if>
+			<if test="sender != null">
+				#{sender,jdbcType=VARCHAR},
+			</if>
+			<if test="receiver != null">
+				#{receiver,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatetime != null">
+				#{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="mark != null">
+				#{mark,jdbcType=INTEGER},
+			</if>
+			<if test="senderflag != null">
+				#{senderflag,jdbcType=INTEGER},
+			</if>
+			<if test="receiverflag != null">
+				#{receiverflag,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.allmsi.caas.model.OpinionNews">
+		update OPINION_NEWS
+		<set>
+			<if test="pjid != null">
+				PJID = #{pjid,jdbcType=VARCHAR},
+			</if>
+			<if test="sender != null">
+				SENDER = #{sender,jdbcType=VARCHAR},
+			</if>
+			<if test="receiver != null">
+				RECEIVER = #{receiver,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null">
+				TITLE = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				CONTENT = #{content,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				CREATETIME = now(),
+			</if>
+			<if test="updatetime != null">
+				UPDATETIME = #{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="mark != null">
+				MARK = #{mark,jdbcType=INTEGER},
+			</if>
+			<if test="senderflag != null">
+				SENDERFLAG = #{senderflag,jdbcType=INTEGER},
+			</if>
+			<if test="receiverflag != null">
+				RECEIVERFLAG = #{receiverflag,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.allmsi.caas.model.OpinionNews">
+		update
+		OPINION_NEWS
+		set PJID = #{pjid,jdbcType=VARCHAR},
+		SENDER =
+		#{sender,jdbcType=VARCHAR},
+		RECEIVER = #{receiver,jdbcType=VARCHAR},
+		TITLE = #{title,jdbcType=VARCHAR},
+		CONTENT =
+		#{content,jdbcType=VARCHAR},
+		CREATETIME =
+		#{createtime,jdbcType=TIMESTAMP},
+		UPDATETIME =
+		#{updatetime,jdbcType=TIMESTAMP},
+		MARK = #{mark,jdbcType=INTEGER},
+		SENDERFLAG = #{senderflag,jdbcType=INTEGER},
+		RECEIVERFLAG =
+		#{receiverflag,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<select id="selectBySender" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from OPINION_NEWS
+		<where>
+			SENDER = #{sender,jdbcType=VARCHAR}
+		</where>
+	</select>
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="com.allmsi.caas.model.OpinionNews">
+		select count(*)
+		from OPINION_NEWS
+		<where>
+			<if test="mark != null and mark !='' ">
+				MARK = #{mark,jdbcType=INTEGER}
+			</if>
+			<if test="senderflag != null and senderflag !='' ">
+				and SENDERFLAG = #{senderflag,jdbcType=INTEGER}
+			</if>
+			<if test="receiverflag != null and senderflag !='' ">
+				and RECEIVERFLAG = #{receiverflag,jdbcType=INTEGER}
+			</if>
+			<if test="receiver != null and receiver != '' ">
+				and RECEIVER = #{receiver,jdbcType=VARCHAR}
+			</if>
+			<if test="sender != null and sender != '' ">
+				and SENDER = #{sender,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<select id="query" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from OPINION_NEWS
+		<where>
+			<if test="mark != null and mark !='' ">
+				MARK = #{mark,jdbcType=INTEGER}
+			</if>
+			<if test="senderflag != null and senderflag !='' ">
+				and SENDERFLAG = #{senderflag,jdbcType=INTEGER}
+			</if>
+			<if test="receiverflag != null and senderflag !='' ">
+				and RECEIVERFLAG = #{receiverflag,jdbcType=INTEGER}
+			</if>
+			<if test="receiver != null and receiver != '' ">
+				and RECEIVER = #{receiver,jdbcType=VARCHAR}
+			</if>
+			<if test="sender != null and sender != '' ">
+				and SENDER = #{sender,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by CREATETIME desc
+		LIMIT #{page},#{pageSize}
+	</select>
+	<select id="query1" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from OPINION_NEWS
+		<where>
+			<if test="receiverflag != null and senderflag !='' ">
+				and RECEIVERFLAG = #{receiverflag,jdbcType=INTEGER}
+			</if>
+			<if test="receiver != null and receiver != '' ">
+				and RECEIVER = #{receiver,jdbcType=VARCHAR}
+			</if>
+		</where>
+		order by MARK asc,CREATETIME desc
+		LIMIT #{page},#{pageSize}
+	</select>
+	<update id="deleteFlag" parameterType="com.allmsi.caas.model.OpinionNews">
+		update OPINION_NEWS
+		<set>
+			UPDATETIME = now(),
+			<if test="senderflag != null and senderflag !='' ">
+				SENDERFLAG = #{senderflag,jdbcType=INTEGER},
+			</if>
+			<if test="receiverflag != null and senderflag !='' ">
+				RECEIVERFLAG = #{receiverflag,jdbcType=INTEGER},
+			</if>
+			<if test="mark != null and mark !='' ">
+				MARK = #{mark,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateBatch" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update OPINION_NEWS set UPDATETIME = now(),MARK = #{item.mark} 
+			where ID = #{item.id}
+		</foreach>
+	</update>
+</mapper>

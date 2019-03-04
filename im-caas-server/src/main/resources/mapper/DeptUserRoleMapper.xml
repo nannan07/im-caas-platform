@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.sys.dao.DeptUserRoleMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.sys.model.po.DeptUserRole">
+		<id column="ID" property="userid" jdbcType="VARCHAR" />
+		<result column="DeptId" property="deptid" jdbcType="VARCHAR" />
+		<result column="RoleId" property="roleid" jdbcType="VARCHAR" />
+
+		<result column="DeleteFlag" property="deleteflag" jdbcType="INTEGER" />
+		<result column="LoginName" property="loginname" jdbcType="VARCHAR" />
+		<result column="UserName" property="username" jdbcType="VARCHAR" />
+
+		<result column="DeptCode" property="deptcode" jdbcType="VARCHAR" />
+		<result column="DeptName" property="deptname" jdbcType="VARCHAR" />
+
+		<result column="RoleName" property="rolename" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectthree" resultMap="BaseResultMap"
+		parameterType="com.allmsi.sys.model.po.DeptUserRole">
+		select t.* ,t1.*,t2.* from MSI_USER t left join MSI_USER_ROLE t1 on
+		t.ID=t1.UserId left join MSI_ROLE t2
+		on t2.ID=t1.RoleId left join MSI_USER_DEPT t3 on t.id = t3.UserId left
+		join MSI_DEPT t4 on t4.ID= t3.DeptId
+		<where>
+			t.DeleteFlag = 0
+			<if test="userid != null and userid != '' ">
+				and t.Id = #{userid,jdbcType=VARCHAR}
+			</if>
+			<if test="loginname != null and loginname != '' ">
+				and t.LoginName = #{loginname,jdbcType=VARCHAR}
+			</if>
+			
+			<if test="roleid != null and roleid != '' ">
+				and t2.Id = #{roleid,jdbcType=VARCHAR}
+			</if>
+			<if test="rolename != null and rolename != '' ">
+				and t2.RoleName = #{rolename,jdbcType=VARCHAR}
+			</if>
+			<if test="deptid != null and deptid != '' ">
+				and t4.Id = #{deptid,jdbcType=VARCHAR}
+			</if>
+			<if test="deptcode != null and deptcode != '' ">
+				and t4.DeptCode = #{deptcode,jdbcType=VARCHAR}
+			</if>
+			<if test="deptname != null and deptname != '' ">
+				and t4.DeptName = #{deptname,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+</mapper>

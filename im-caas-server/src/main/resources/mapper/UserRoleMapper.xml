@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.sys.dao.UserRoleMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.sys.model.po.UserRole">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="UserId" property="userid" jdbcType="VARCHAR" />
+		<result column="RoleId" property="roleid" jdbcType="VARCHAR" />
+		<result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="UpdateTime" property="updatetime" jdbcType="TIMESTAMP" />
+		<result column="DeleteFlag" property="deleteFlag" jdbcType="INTEGER" />
+
+		<result column="LoginName" property="loginname" jdbcType="VARCHAR" />
+		<result column="UserName" property="username" jdbcType="VARCHAR" />
+		<result column="RoleName" property="rolename" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, UserId, RoleId, CreateTime, UpdateTime
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from MSI_USER_ROLE
+		where ID = #{id,jdbcType=VARCHAR} and DeleteFlag = 0
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		MSI_USER_ROLE
+		where ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.allmsi.sys.model.po.UserRole">
+		insert into MSI_USER_ROLE (ID,
+		UserId, RoleId,
+		CreateTime, UpdateTime ,DeleteFlag)
+		values
+		(#{id,jdbcType=VARCHAR},
+		#{userid,jdbcType=VARCHAR},
+		#{roleid,jdbcType=VARCHAR},
+		#{createtime,jdbcType=TIMESTAMP},
+		#{updatetime,jdbcType=TIMESTAMP},#{deleteFlag,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.allmsi.sys.model.po.UserRole">
+		insert into MSI_USER_ROLE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="userid != null">
+				UserId,
+			</if>
+			<if test="roleid != null">
+				RoleId,
+			</if>
+			<if test="createtime != null">
+				CreateTime,
+			</if>
+			<if test="updatetime != null">
+				UpdateTime,
+			</if>
+			<if test="deleteFlag != null">
+				DeleteFlag,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="userid != null">
+				#{userid,jdbcType=VARCHAR},
+			</if>
+			<if test="roleid != null">
+				#{roleid,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatetime != null">
+				#{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="deleteFlag != null">
+				#{deleteFlag,jdbcType=INTEGER}
+			</if>
+
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.allmsi.sys.model.po.UserRole">
+		update MSI_USER_ROLE
+		<set>
+			<if test="userid != null">
+				UserId = #{userid,jdbcType=VARCHAR},
+			</if>
+			<if test="roleid != null">
+				RoleId = #{roleid,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				CreateTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatetime != null">
+				UpdateTime = #{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="deleteFlag != null">
+				DeleteFlag = #{deleteFlag,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.allmsi.sys.model.po.UserRole">
+		update
+		MSI_USER_ROLE
+		set UserId = #{userid,jdbcType=VARCHAR},
+		RoleId =
+		#{roleid,jdbcType=VARCHAR},
+		CreateTime =
+		#{createtime,jdbcType=TIMESTAMP},
+		UpdateTime =
+		#{updatetime,jdbcType=TIMESTAMP},
+		DeleteFlag =
+		#{deleteFlag,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<select id="selectUserOrRole" resultMap="BaseResultMap"
+		parameterType="com.allmsi.sys.model.po.UserRole">
+		select t.id,t.UserId,t.RoleId,t1.LoginName,t1.UserName ,t2.RoleName
+		from
+		MSI_USER_ROLE t left join
+		MSI_USER t1 on t.UserId=t1.Id
+		left join
+		MSI_ROLE t2 on
+		t2.Id = t.RoleId
+		<where>
+			t.DeleteFlag = 0
+			<if test="userid != null and userid != '' ">
+				and t1.Id = #{userid,jdbcType=VARCHAR}
+			</if>
+			<if test="roleid != null and roleid != '' ">
+				and t2.Id = #{roleid,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into MSI_USER_ROLE (ID,
+		UserId, RoleId,
+		CreateTime,
+		UpdateTime,DeleteFlag)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id}, #{item.userid}, #{item.roleid},
+			now(), #{item.updatetime},#{item.deleteFlag})
+		</foreach>
+	</insert>
+	<update id="batchUpdate" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" open=""
+			close="" separator=";">
+			update MSI_USER_ROLE set DeleteFlag = 1,UpdateTime = now()
+			where UserId =  #{item.userid} and RoleId = #{item.roleid}
+		</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.plugin.flow.dao.FlowStateMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.plugin.flow.model.FlowState">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="OBJECTID" property="objectid" jdbcType="VARCHAR" />
+		<result column="NODE" property="node" jdbcType="INTEGER" />
+		<result column="SENDERID" property="senderid" jdbcType="VARCHAR" />
+		<result column="RECEIVEERID" property="receiveerid" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="INTEGER" />
+		<result column="CREATETIME" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="UPDATETIME" property="updatetime" jdbcType="TIMESTAMP" />
+		<result column="DELECTFLAG" property="delectflag" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, OBJECTID, NODE, SENDERID, RECEIVEERID, TYPE,
+		CREATETIME, UPDATETIME,
+		DELECTFLAG
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from FLOW_STATE
+		where ID = #{id,jdbcType=VARCHAR}
+	</select>
+	<select id="selectFlowState" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from FLOW_STATE
+		where OBJECTID = #{objectId,jdbcType=VARCHAR} AND (RECEIVEERID = #{userId,jdbcType=VARCHAR} 
+			     OR RECEIVEERID = #{deptId,jdbcType=VARCHAR}) and DELECTFLAG = 0 order by CREATETIME desc limit 1
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		FLOW_STATE
+		where ID = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.allmsi.plugin.flow.model.FlowState">
+		insert into FLOW_STATE (ID,
+		OBJECTID, NODE,
+		SENDERID, RECEIVEERID, TYPE,
+		CREATETIME, UPDATETIME,
+		DELECTFLAG
+		)
+		values (#{id,jdbcType=VARCHAR},
+		#{objectid,jdbcType=VARCHAR},
+		#{node,jdbcType=INTEGER},
+		#{senderid,jdbcType=VARCHAR}, #{receiveerid,jdbcType=VARCHAR},
+		#{type,jdbcType=INTEGER},
+		now(), #{updatetime,jdbcType=TIMESTAMP}, 0
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.allmsi.plugin.flow.model.FlowState">
+		insert into FLOW_STATE
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				ID,
+			</if>
+			<if test="objectid != null">
+				OBJECTID,
+			</if>
+			<if test="node != null">
+				NODE,
+			</if>
+			<if test="senderid != null">
+				SENDERID,
+			</if>
+			<if test="receiveerid != null">
+				RECEIVEERID,
+			</if>
+			<if test="type != null">
+				TYPE,
+			</if>
+			<if test="createtime != null">
+				CREATETIME,
+			</if>
+			<if test="updatetime != null">
+				UPDATETIME,
+			</if>
+			<if test="delectflag != null">
+				DELECTFLAG,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="objectid != null">
+				#{objectid,jdbcType=VARCHAR},
+			</if>
+			<if test="node != null">
+				#{node,jdbcType=INTEGER},
+			</if>
+			<if test="senderid != null">
+				#{senderid,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveerid != null">
+				#{receiveerid,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="updatetime != null">
+				#{updatetime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="delectflag != null">
+				#{delectflag,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.allmsi.plugin.flow.model.FlowState">
+		update FLOW_STATE
+		<set>
+			UPDATETIME = now(),
+			<if test="objectid != null">
+				OBJECTID = #{objectid,jdbcType=VARCHAR},
+			</if>
+			<if test="node != null">
+				NODE = #{node,jdbcType=INTEGER},
+			</if>
+			<if test="senderid != null">
+				SENDERID = #{senderid,jdbcType=VARCHAR},
+			</if>
+			<if test="receiveerid != null">
+				RECEIVEERID = #{receiveerid,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				TYPE = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				CREATETIME = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="delectflag != null">
+				DELECTFLAG = #{delectflag,jdbcType=INTEGER},
+			</if>
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.allmsi.plugin.flow.model.FlowState">
+		update FLOW_STATE
+		set OBJECTID = #{objectid,jdbcType=VARCHAR},
+		NODE =
+		#{node,jdbcType=INTEGER},
+		SENDERID = #{senderid,jdbcType=VARCHAR},
+		RECEIVEERID = #{receiveerid,jdbcType=VARCHAR},
+		TYPE =
+		#{type,jdbcType=INTEGER},
+		CREATETIME =
+		#{createtime,jdbcType=TIMESTAMP},
+		UPDATETIME =
+		#{updatetime,jdbcType=TIMESTAMP},
+		DELECTFLAG =
+		#{delectflag,jdbcType=INTEGER}
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into FLOW_STATE (ID, OBJECTID, NODE,
+		SENDERID, RECEIVEERID,
+		TYPE,
+		CREATETIME, UPDATETIME, DELECTFLAG)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id}, #{item.objectid}, #{item.node},
+			#{item.senderid}, #{item.receiveerid},#{item.type},
+			now(),
+			#{item.updatetime},0)
+		</foreach>
+	</insert>
+	<select id="nodeSelect" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="Base_Column_List" />
+		from FLOW_STATE
+		where OBJECTID = #{objectId,jdbcType=VARCHAR} and DELECTFLAG = 0 and (RECEIVEERID =
+		#{userId,jdbcType=VARCHAR} or RECEIVEERID =
+		#{deptId,jdbcType=VARCHAR}) order by CREATETIME desc limit 1
+	</select>
+	<update id="delectFlag" parameterType="java.util.Map">
+		update FLOW_STATE
+		set DELECTFLAG = 1,UPDATETIME = now()
+		where OBJECTID = #{objectId,jdbcType=VARCHAR} and DELECTFLAG = 0 and (RECEIVEERID =
+		#{userId,jdbcType=VARCHAR} or RECEIVEERID =
+		#{deptId,jdbcType=VARCHAR}) 
+	</update>
+</mapper>

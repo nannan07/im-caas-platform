@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.caas.dao.PjCpersonMapper" >
+  <resultMap id="BaseResultMap" type="com.allmsi.caas.model.PjCperson" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="PjId" property="pjid" jdbcType="VARCHAR" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="Phone" property="phone" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="UpdateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="DeleFlag" property="deleflag" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, PjId, Name, Phone,sort, CreateTime, UpdateTime, DeleFlag
+  </sql>
+  <select id="selectByPjId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from PJ_CPERSON
+		where PjId = #{pjid,jdbcType=VARCHAR} and DeleFlag =0
+		order by sort
+	</select>
+	<update id="deleteByPjid" parameterType="java.lang.String">
+		update PJ_CPERSON
+		set
+		DeleFlag = 1,UpdateTime = now()
+		where PjId = #{pjid,jdbcType=VARCHAR}
+	</update>
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into PJ_CPERSON (ID, PjId, Name,
+		Phone, sort, CreateTime,
+		DeleFlag)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id}, #{item.pjid}, #{item.name}, #{item.phone}, #{item.sort},
+			now(),0)
+		</foreach>
+	</insert>
+</mapper>

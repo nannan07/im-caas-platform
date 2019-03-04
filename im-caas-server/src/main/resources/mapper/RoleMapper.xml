@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.sys.dao.RoleMapper" >
+  <resultMap id="BaseResultMap" type="com.allmsi.sys.model.po.Role" >
+    <id column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="RoleName" property="rolename" jdbcType="VARCHAR" />
+    <result column="CreateTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="UpdateTime" property="updatetime" jdbcType="TIMESTAMP" />
+    <result column="DeleteFlag" property="deleteflag" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    ID, RoleName, CreateTime, UpdateTime, DeleteFlag
+  </sql>
+   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from MSI_ROLE
+    where DeleteFlag = 0 
+    	and ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="query" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select 
+    <include refid="Base_Column_List" />
+    from MSI_ROLE
+    where DeleteFlag = 0 
+    	<if test="rolename != null and rolename != '' " >
+         	and RoleName like CONCAT('%', #{rolename}, '%')
+     	</if>
+    order by CreateTime DESC
+     LIMIT #{page},#{pageSize}
+  </select>
+  <select id="queryCount" resultType="java.lang.Integer" parameterType="com.allmsi.sys.model.po.Role" >
+    select  count(*)
+    from MSI_ROLE
+    where DeleteFlag = 0 
+    	<if test="rolename != null and rolename != '' " >
+         	and RoleName like CONCAT('%', #{rolename}, '%')
+     	</if>
+  </select>
+  <select id="roleNameSelect" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from MSI_ROLE
+    where DeleteFlag = 0 and RoleName  = #{rolename,jdbcType=VARCHAR}
+    order by CreateTime DESC
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from MSI_ROLE
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.allmsi.sys.model.po.Role" >
+    insert into MSI_ROLE (ID, RoleName, CreateTime, 
+      UpdateTime, DeleteFlag)
+    values (#{id,jdbcType=VARCHAR}, #{rolename,jdbcType=VARCHAR}, now(), 
+      #{updatetime,jdbcType=TIMESTAMP}, 0)
+  </insert>
+  <insert id="insertSelective" parameterType="com.allmsi.sys.model.po.Role" >
+    insert into MSI_ROLE
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        ID,
+      </if>
+      <if test="rolename != null" >
+        RoleName,
+      </if>
+      <if test="createtime != null" >
+        CreateTime,
+      </if>
+      <if test="updatetime != null" >
+        UpdateTime,
+      </if>
+      <if test="deleteflag != null" >
+        DeleteFlag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="rolename != null" >
+        #{rolename,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatetime != null" >
+        #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        #{deleteflag,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.allmsi.sys.model.po.Role" >
+    update MSI_ROLE
+    <set >
+      <if test="rolename != null" >
+        RoleName = #{rolename,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteflag != null" >
+        DeleteFlag = #{deleteflag,jdbcType=INTEGER},
+      </if>
+       UpdateTime = now()
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.allmsi.sys.model.po.Role" >
+    update MSI_ROLE
+    set RoleName = #{rolename,jdbcType=VARCHAR},
+      CreateTime = #{createtime,jdbcType=TIMESTAMP},
+      UpdateTime = #{updatetime,jdbcType=TIMESTAMP},
+      DeleteFlag = #{deleteflag,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="upddateflag" parameterType="java.lang.String" >
+    update MSI_ROLE
+    set DeleteFlag = 1,UpdateTime = now()
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  
+</mapper>

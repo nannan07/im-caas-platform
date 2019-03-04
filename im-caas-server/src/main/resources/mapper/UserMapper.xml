@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.sys.dao.UserMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.sys.model.po.User">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="USERNAME" property="userName" jdbcType="VARCHAR" />
+		<result column="PWD" property="password" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="SEX" property="sex" jdbcType="INTEGER" />
+		<result column="SORT" property="sort" jdbcType="INTEGER" />
+		<result column="CTIME" property="cTime" jdbcType="TIMESTAMP" />
+		<result column="UTIME" property="uTime" jdbcType="TIMESTAMP" />
+		<result column="DEL" property="del" jdbcType="INTEGER" />
+
+		<result column="DEPTID" property="deptId" jdbcType="VARCHAR" />
+		<result column="DEPTNAME" property="deptName" jdbcType="VARCHAR" />
+		<result column="TYPE" property="deptType" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		ID, USERNAME, PWD, PHONE, EMAIL, SEX, SORT,
+		CTIME, UTIME, DEL
+	</sql>
+	<sql id="Simple_Column_List">
+		u.ID, u.USERNAME, u.PHONE, u.EMAIL, u.SEX,
+		u.SORT, u.CTIME
+	</sql>
+	<sql id="User_Dept_Column_List">
+		u.ID, u.USERNAME, u.PHONE, u.EMAIL, u.SEX,
+		u.SORT, u.CTIME, d.ID as DEPTID, d.DEPTNAME, d.DEPTTYPE
+	</sql>
+	
+	<select id="login" resultMap="BaseResultMap"
+		parameterType="com.allmsi.sys.model.po.User">
+		select
+		<include refid="User_Dept_Column_List" />
+		from MSI_USER u
+		left join MSI_USER_DEPT ud on ud.USERID = u.ID and
+		ud.DEL=0
+		left join MSI_DEPT d on ud.DEPTID = d.ID and
+		d.DEL = 0
+		where u.DEL=0 and
+		(u.LOGINNAME =
+		#{loginName,jdbcType=VARCHAR} or u.PHONE = #{loginName,jdbcType=VARCHAR}
+		or u.EMAIL = #{loginName,jdbcType=VARCHAR}) and u.PWD =
+		#{password,jdbcType=VARCHAR}
+		order by u.SORT,u.CTIME DESC limit 1
+	</select>
+	
+	<select id="select" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		<include refid="User_Dept_Column_List" />
+		from MSI_USER u
+		left join msi_user_dept ud on u.ID = ud.USERID
+		left join msi_dept d on ud.DEPTID = d.ID
+		where u.DEL = 0
+		<if test="userName != null and userName != '' ">
+			and u.USERNAME like CONCAT('%', #{userName}, '%')
+		</if>
+		<if test="phone != null and phone != '' ">
+			and u.PHONE = #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="email != null and email != '' ">
+			and u.EMAIL = #{email,jdbcType=VARCHAR}
+		</if>
+		<if test="sex != null">
+			and u.SEX = #{sex,jdbcType=INTEGER}
+		</if>
+		<if test="deptType != null">
+			and d.DEPTTYPE = #{deptType,jdbcType=INTEGER}
+		</if>
+		order by u.SORT, u.CTIME DESC
+		LIMIT #{page},#{pageSize}
+	</select>
+	
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="com.allmsi.sys.model.po.User">
+		select count(u.ID)
+		from MSI_USER u
+		left join msi_user_dept ud on u.ID = ud.USERID
+		left join msi_dept d on ud.DEPTID = d.ID
+		where u.DEL = 0
+		<if test="userName != null and userName != '' ">
+			and u.USERNAME like CONCAT('%', #{userName}, '%')
+		</if>
+		<if test="phone != null and phone != '' ">
+			and u.PHONE = #{phone,jdbcType=VARCHAR}
+		</if>
+		<if test="email != null and email != '' ">
+			and u.EMAIL = #{email,jdbcType=VARCHAR}
+		</if>
+		<if test="sex != null">
+			and u.SEX = #{sex,jdbcType=INTEGER}
+		</if>
+		<if test="deptType != null">
+			and d.DEPTTYPE = #{deptType,jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="User_Dept_Column_List" />
+		from MSI_USER u
+		left join msi_user_dept ud on u.ID = ud.USERID
+		left join msi_dept d on ud.DEPTID = d.ID
+		where u.DEL = 0 and u.ID=#{id,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectByDeptId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Simple_Column_List" />
+		from MSI_USER_DEPT ud
+		left join MSI_USER u on ud.USERID=u.ID and u.DEL=0
+		where ud.DeleteFlag=0 and ud.DEPTID=#{deptId,jdbcType=VARCHAR}
+		order by u.ORDER,u.CTIME DESC
+	</select>
+	
+	<select id="selectByRoleId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Simple_Column_List" />
+		from MSI_USER_ROLE ur
+		left join MSI_USER u on ur.UserId=u.ID and u.DEL=0
+		where ur.DeleteFlag=0 and ur.RoleId=#{roleId,jdbcType=VARCHAR}
+		order by u.ORDER,u.CTIME DESC
+	</select>
+	
+	<select id="checkUnique" resultType="java.lang.Integer"
+		parameterType="com.allmsi.sys.model.po.User">
+		select count(ID) from MSI_USER where DEL = 0
+		<trim prefix="and (" suffix=")" suffixOverrides="or">
+			<if test="phone != null and phone != '' ">
+				PHONE = #{phone,jdbcType=VARCHAR} or
+			</if>
+			<if test="email != null and email != '' ">
+				EMAIL = #{email,jdbcType=VARCHAR}
+			</if>
+		</trim>
+	</select>
+	
+	<insert id="insertSelective" parameterType="com.allmsi.sys.model.po.User">
+		insert into MSI_USER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null and id != '' ">
+				ID,
+			</if>
+			<if test="userName != null and userName != '' ">
+				USERNAME,
+			</if>
+			<if test="password != null and password != '' ">
+				PWD,
+			</if>
+			<if test="phone != null and phone != '' ">
+				PHONE,
+			</if>
+			<if test="email != null and email != '' ">
+				EMAIL,
+			</if>
+			<if test="sex != null">
+				SEX,
+			</if>
+			<if test="sort != null">
+				SORT,
+			</if>
+			CTIME, DEL
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null and id != '' ">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="userName != null and userName != '' ">
+				#{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null and password != '' ">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null and phone != '' ">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null and email != '' ">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=INTEGER},
+			</if>
+			<if test="sort != null">
+				#{sort,jdbcType=INTEGER},
+			</if>
+			now(), 0
+		</trim>
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.allmsi.sys.model.po.User">
+		update MSI_USER
+		<set>
+			<if test="userName != null and userName != '' ">
+				USERNAME = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null and password != '' ">
+				PWD = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null and phone != '' ">
+				PHONE = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null and email != '' ">
+				EMAIL = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				SEX = #{sex,jdbcType=INTEGER},
+			</if>
+			<if test="sort != null">
+				SORT = #{sort,jdbcType=INTEGER},
+			</if>
+			UTIME = now()
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+	
+	<update id="deleteByPrimaryKey" parameterType="java.lang.String">
+		update MSI_USER
+		set DEL = 1, UTIME = now() where ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

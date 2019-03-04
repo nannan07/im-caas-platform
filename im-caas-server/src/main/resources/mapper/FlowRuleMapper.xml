@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.plugin.flow.dao.FlowRuleMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.plugin.flow.model.FlowTransactor">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selectNodeReceiverPj" resultMap="BaseResultMap" parameterType="java.util.Map" >
+		select t1.ID as ID,t1.DEPTNAME as NAME,t.TYPE as TYPE from FLOW_STATE_LOG t 
+		INNER join MSI_DEPT t1 on t.SENDERID = t1.ID  
+		where t.RECEIVEERID=#{receiver,jdbcType=VARCHAR} and t.OBJECTID = #{objectId,jdbcType=VARCHAR}
+		UNION
+		select t1.ID as ID,t1.LOGINNAME as NAME,t.TYPE as TYPE from FLOW_STATE_LOG t 
+		INNER join MSI_USER t1 on t.SENDERID = t1.ID  
+		where t.RECEIVEERID=#{receiver,jdbcType=VARCHAR} and t.OBJECTID = #{objectId,jdbcType=VARCHAR}
+		UNION
+		select t.ID as ID,t.DEPTNAME as NAME,t.DEPTTYPE as TYPE from MSI_DEPT t where t.DEPTTYPE=#{node,jdbcType=VARCHAR}
+	</select>
+</mapper>

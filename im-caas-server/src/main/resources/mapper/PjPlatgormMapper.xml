@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.caas.dao.PjPlatgormMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.caas.model.PjPlatgorm">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="PJID" property="pjId" jdbcType="VARCHAR" />
+		<result column="DEPTID" property="deptId" jdbcType="VARCHAR" />
+		<result column="DEPTNAME" property="deptName" jdbcType="VARCHAR" />
+		<result column="CTIME" property="cTime" jdbcType="TIMESTAMP" />
+		<result column="UTIME" property="uTime" jdbcType="TIMESTAMP" />
+		<result column="DEL" property="del" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, PJID, DEPTID, CTIME, UTIME, DEL
+	</sql>
+	<sql id="Platgorm_dept_Column_List">
+		p.DEPTID,d.DEPTNAME
+	</sql>
+	<select id="selectByPjid" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Platgorm_dept_Column_List" />
+		from PJ_PLATGORM p left join MSI_DEPT d on d.ID=p.DEPTID
+		where d.DEL = 0 and d.PARENTID is null
+		and p.DEL = 0
+		<if test="_parameter != null and _parameter != '' ">
+			and p.PJID = #{_parameter,jdbcType=VARCHAR}
+		</if>
+		order by d.SORT, d.CTIME DESC
+	</select>
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into PJ_PLATGORM (ID, PJID, DEPTID,
+		CTIME, UTIME, DEL
+		)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.id}, #{item.pjId}, #{item.deptId},
+			now(), #{item.uTime},0)
+		</foreach>
+	</insert>
+	<update id="deleteByPjid" parameterType="java.lang.String">
+		update PJ_PLATGORM
+		set DEL = 1,UTIME = now()
+		where PJID = #{pjId,jdbcType=VARCHAR} and DEL = 0
+	</update>
+</mapper>

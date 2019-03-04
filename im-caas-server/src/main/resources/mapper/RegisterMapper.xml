@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.allmsi.caas.dao.RegisterMapper">
+	<resultMap id="BaseResultMap" type="com.allmsi.caas.model.Register">
+		<id column="ID" property="id" jdbcType="VARCHAR" />
+		<result column="REALNAME" property="realName" jdbcType="VARCHAR" />
+		<result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="CPYNAME" property="cpyName" jdbcType="VARCHAR" />
+		<result column="CORPORATION" property="corporation" jdbcType="VARCHAR" />
+		<result column="CPYADDRESS" property="cpyAddress" jdbcType="VARCHAR" />
+		<result column="CPYTEL" property="cpyTel" jdbcType="VARCHAR" />
+		<result column="BLICENSEID" property="bLicenceId" jdbcType="VARCHAR" />
+		<result column="CPYTYPE" property="cpyType" jdbcType="INTEGER" />
+		<result column="OPINION" property="opinion" jdbcType="VARCHAR" />
+		<result column="STATE" property="state" jdbcType="INTEGER" />
+		<result column="CTIME" property="cTime" jdbcType="TIMESTAMP" />
+		<result column="UTIME" property="uTime" jdbcType="TIMESTAMP" />
+
+		<result column="DEPTID" property="deptId" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		ID, REALNAME, PASSWORD, PHONE, EMAIL, CPYNAME, CORPORATION,
+		CPYADDRESS, CPYTEL, BLICENSEID, CPYTYPE, OPINION, STATE, CTIME, UTIME
+	</sql>
+
+	<sql id="R_D_Column_List">
+		r.ID, r.REALNAME, r.PASSWORD, r.PHONE, r.EMAIL, r.CPYNAME,
+		r.CORPORATION,
+		r.CPYADDRESS, r.CPYTEL, r.BLICENSEID, r.CPYTYPE,
+		r.OPINION, r.STATE, r.CTIME, d.ID as DEPTID
+	</sql>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="R_D_Column_List" />
+		from MSI_REGISTER r
+		left join MSI_DEPT d on r.CPYNAME=d.DEPTNAME and
+		d.DEL=0
+		where r.id = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insertSelective" parameterType="com.allmsi.caas.model.Register">
+		insert into MSI_REGISTER
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null and id != ''">
+				ID,
+			</if>
+			<if test="realName != null and realName != ''">
+				REALNAME,
+			</if>
+			<if test="password != null and password != ''">
+				PASSWORD,
+			</if>
+			<if test="phone != null and phone != ''">
+				PHONE,
+			</if>
+			<if test="email != null and email != ''">
+				EMAIL,
+			</if>
+			<if test="cpyName != null and cpyName != ''">
+				CPYNAME,
+			</if>
+			<if test="corporation != null and corporation != ''">
+				CORPORATION,
+			</if>
+			<if test="cpyAddress != null and cpyAddress != ''">
+				CPYADDRESS,
+			</if>
+			<if test="cpyTel != null and cpyTel != ''">
+				CPYTEL,
+			</if>
+			<if test="bLicenceId != null and bLicenceId != ''">
+				BLICENSEID,
+			</if>
+			<if test="cpyType != null">
+				CPYTYPE,
+			</if>
+			<if test="state != null">
+				STATE,
+			</if>
+			CTIME,
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null and id != ''">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="realName != null and realName != ''">
+				#{realName,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null and password != ''">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null and phone != ''">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null and email != ''">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="cpyName != null and cpyName != ''">
+				#{cpyName,jdbcType=VARCHAR},
+			</if>
+			<if test="corporation != null and corporation != ''">
+				#{corporation,jdbcType=VARCHAR},
+			</if>
+			<if test="cpyAddress != null and cpyAddress != ''">
+				#{cpyAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="cpyTel != null and cpyTel != ''">
+				#{cpyTel,jdbcType=VARCHAR},
+			</if>
+			<if test="bLicenceId != null and bLicenceId != ''">
+				#{bLicenceId,jdbcType=VARCHAR},
+			</if>
+			<if test="cpyType != null">
+				#{cpyType,jdbcType=INTEGER},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=INTEGER},
+			</if>
+			now()
+		</trim>
+	</insert>
+
+	<select id="selectList" resultMap="BaseResultMap"
+		parameterType="com.allmsi.caas.model.Register">
+		select
+		<include refid="Base_Column_List" />
+		from MSI_REGISTER
+		<where>
+		<if test="cpyName != null and cpyName !='' ">
+		CPYNAME  like CONCAT('%', #{cpyName}, '%') 
+		or REALNAME like CONCAT('%', #{realName}, '%')
+		</if>
+		</where>
+		order by state, ctime desc
+			LIMIT #{page},#{pageSize}
+	</select>
+	
+	<select id="selectListCount" resultType="java.lang.Integer"
+		parameterType="com.allmsi.caas.model.Register">
+		select count(id)
+		from MSI_REGISTER
+		<where>
+			<if test="cpyName != null and cpyName !='' ">
+				CPYNAME  like CONCAT('%', #{cpyName}, '%') 
+				or REALNAME like CONCAT('%', #{realName}, '%')
+			</if>
+		</where>
+		order by state, ctime desc
+	</select>
+
+	<select id="checkUserInfo" resultType="java.lang.Integer"
+		parameterType="com.allmsi.caas.model.Register">
+		select COUNT(*) from (
+		SELECT id FROM MSI_REGISTER
+		where (state=1 or
+		state=2)
+		<trim prefix="and (" suffix=")" suffixOverrides="or">
+			<if test="phone != null and phone != '' ">
+				PHONE = #{phone,jdbcType=VARCHAR} or
+			</if>
+			<if test="email != null and email != '' ">
+				EMAIL = #{email,jdbcType=VARCHAR}
+			</if>
+		</trim>
+		UNION ALL
+		SELECT id FROM
+		MSI_USER where Del=0
+		<trim prefix="and (" suffix=")" suffixOverrides="or">
+			<if test="phone != null and phone != '' ">
+				PHONE = #{phone,jdbcType=VARCHAR} or
+			</if>
+			<if test="email != null and email != '' ">
+				EMAIL = #{email,jdbcType=VARCHAR}
+			</if>
+		</trim>
+		) t
+	</select>
+
+	<select id="checkCpyInfo" resultType="java.lang.Integer"
+		parameterType="java.lang.String">
+		SELECT COUNT(*) FROM MSI_REGISTER where
+		state=1
+		<if test="_parameter != null and _parameter != ''">
+			and CPYNAME = #{_parameter,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<update id="auditingRegister" parameterType="com.allmsi.caas.model.Register">
+		update
+		MSI_REGISTER
+		<set>
+			<if test="opinion != null and opinion != ''">
+				OPINION = #{opinion,jdbcType=VARCHAR},
+			</if>
+			<if test="state != null">
+				STATE = #{state,jdbcType=INTEGER},
+			</if>
+			UTIME = now()
+		</set>
+		where ID = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>
